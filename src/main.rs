@@ -5,10 +5,11 @@ fn main() {
 
     let config = Config::new(&args);
 
-    let contents = fs::read_to_string(config.file_path)
-        .expect("Should have been able to read to the file");
+    let contents =
+        fs::read_to_string(config.file_path).expect("Should have been able to read to the file");
 
     dbg!(contents);
+    dbg!(config.query); // TODO use this later
 }
 
 struct Config {
@@ -20,10 +21,19 @@ impl Config {
     fn new(args: &[String]) -> Config {
         let query = args[1].clone();
         let file_path = args[2].clone();
-        
-        Config {
-            query,
-            file_path
-        }
+
+        Config { query, file_path }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_config() {
+        let config = Config::new(&["minigrep".to_string(), "one".to_string(), "two".to_string()]);
+        assert_eq!(config.query, "one");
+        assert_eq!(config.file_path, "two");
     }
 }
