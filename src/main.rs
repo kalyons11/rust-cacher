@@ -19,6 +19,9 @@ struct Config {
 
 impl Config {
     fn new(args: &[String]) -> Config {
+        if args.len() < 3 {
+            panic!("Not enough arguments have been provided");
+        }
         let query = args[1].clone();
         let file_path = args[2].clone();
 
@@ -35,5 +38,11 @@ mod tests {
         let config = Config::new(&["minigrep".to_string(), "one".to_string(), "two".to_string()]);
         assert_eq!(config.query, "one");
         assert_eq!(config.file_path, "two");
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_config_panic() {
+        let _config = Config::new(&["minigrep".to_string()]);
     }
 }
