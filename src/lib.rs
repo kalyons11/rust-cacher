@@ -1,6 +1,8 @@
 use std::error::Error;
 use std::{env, fs};
 
+mod cache;
+
 #[derive(Debug)]
 pub struct Config {
     pub query: String,
@@ -28,7 +30,7 @@ impl Config {
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    let contents = fs::read_to_string(config.file_path)?;
+    let contents = fs::read_to_string(config.file_path.clone())?;
 
     let results = if config.ignore_case {
         search_case_insensitive(&config.query, &contents)
@@ -36,9 +38,16 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
         search(&config.query, &contents)
     };
 
-    for line in results {
+    for line in results.iter() {
         println!("{line}")
     }
+
+    let key = &format!("{0}/{1}", config.query, config.file_path);
+    let value = &results.len().to_string();
+    println!("Setting {key} to {value}");
+    cache::set(key, value)?;
+    let value = cache::get(key)?;
+    println!("Got {value} for {key}.");
 
     Ok(())
 }
@@ -75,14 +84,14 @@ mod tests {
     #[test]
     fn test_config() {
         let config =
-            Config::build(&["minigrep".to_string(), "one".to_string(), "two".to_string()]).unwrap();
+            Config::build(&["cacher".to_string(), "one".to_string(), "two".to_string()]).unwrap();
         assert_eq!(config.query, "one");
         assert_eq!(config.file_path, "two");
     }
 
     #[test]
     fn test_config_error() {
-        let _config = Config::build(&["minigrep".to_string()])
+        let _config = Config::build(&["cacher".to_string()])
             .expect_err("Testing handling of insufficient arguments");
     }
 
