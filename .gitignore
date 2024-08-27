@@ -1,1 +1,4 @@
 /target
+
+# Static files
+*.txt

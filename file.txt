@@ -1,1 +1,0 @@
-Here is a file with some content that we are going to grep for.
