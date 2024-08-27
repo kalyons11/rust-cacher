@@ -48,6 +48,14 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     cache::set(key, value)?;
     let value = cache::get(key)?;
     println!("Got {value} for {key}.");
+    println!("Incrementing {key}");
+    cache::incr(key)?;
+    let value_incr = cache::get(key)?;
+    println!("Got {value_incr} for {key} after incrementing.");
+    println!("Decrementing {key}");
+    cache::decr(key)?;
+    let value_decr = cache::get(key)?;
+    println!("Got {value_decr} for {key} after decrementing.");
 
     Ok(())
 }
